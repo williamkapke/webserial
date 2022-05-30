@@ -76,3 +76,25 @@ input {
   outline: none;
   font: inherit;
 }
+
+#na {
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  opacity: .93;
+  background-color: black;
+  z-index: 999;
+  text-align: center;
+}
+#na h1 {
+  /*width: fit-content;*/
+  margin-top: 50px;
+  font-family: 'Syne Mono', monospace;
+  font-size: 32px;
+}
+#na p {
+  /*width: fit-content;*/
+  /*margin: 0 auto;*/
+}

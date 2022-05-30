@@ -8,6 +8,7 @@ import { decode, encodeWithHtml } from "./asciiEncoder.js"
 import { getUsbInfo } from "./usb-ids.js"
 const connection = useConnectionStore()
 window.conn = connection
+const supported = !!navigator.serial
 let newlines = ref(true)
 let left = ref(0)
 let displayedInput = ref('')
@@ -19,20 +20,22 @@ let historyIndex = 0
 let wip = ''
 let scrolledToBottom = true
 
-navigator.serial.getPorts().then(async (ports) => {
-  console.log('ports', ports)
-  for (let port of ports) {
-    const {usbVendorId, usbProductId} = port.getInfo()
-    const vid = hex(usbVendorId)
-    const pid = hex(usbProductId)
-    const info = await getUsbInfo(vid, pid)
-    console.log('paired', `${vid}:${pid}`, info.product)
-  }
-  // for await (let port of makeTextFileLineIterator('/public/usb-ids.txt')) {
-  //
-  // }
-  // getUsbInfo('0dd4','0237').then(console.log)
-});
+if (navigator.serial) {
+  navigator.serial.getPorts().then(async (ports) => {
+    console.log('ports', ports)
+    for (let port of ports) {
+      const {usbVendorId, usbProductId} = port.getInfo()
+      const vid = hex(usbVendorId)
+      const pid = hex(usbProductId)
+      const info = await getUsbInfo(vid, pid)
+      console.log('paired', `${vid}:${pid}`, info.product)
+    }
+    // for await (let port of makeTextFileLineIterator('/public/usb-ids.txt')) {
+    //
+    // }
+    // getUsbInfo('0dd4','0237').then(console.log)
+  });
+}
 
 watch(inputData, async (data) => {
   displayedInput.value = encodeWithHtml(data, false)
@@ -205,6 +208,14 @@ function consoleScroll(e) {
       &copy; William Kapke <a rel="license" href="http://creativecommons.org/licenses/by-nc-sa/4.0/"><img alt="Creative Commons License" style="border-width:0" src="https://i.creativecommons.org/l/by-nc-sa/4.0/80x15.png" /></a>This work is licensed under a <a rel="license" href="http://creativecommons.org/licenses/by-nc-sa/4.0/">Creative Commons Attribution-NonCommercial-ShareAlike 4.0 International License</a>.
     </div>
   </footer>
+  <div id="na" v-if="!supported">
+    <h1>
+      This Web Browser does not support the WebSerial API.
+    </h1>
+    <p>
+      Maybe consider using Chrome for this?
+    </p>
+  </div>
 </template>
 
 <style>

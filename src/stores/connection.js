@@ -39,6 +39,8 @@ const useConnectionStore = defineStore({
   actions: {
     async selectPort() {
       try {
+        if (!navigator.serial) return false
+
         this.port = await navigator.serial.requestPort()
         const id = vid_pid(this.port)
         this.id = id
