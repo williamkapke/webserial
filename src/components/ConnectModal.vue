@@ -3,16 +3,16 @@ import { useConnectionStore } from '../stores/connection.js'
 import { ref, watch } from "vue";
 const connection = useConnectionStore()
 
-async function connect() {
-  if (await connection.selectPort()) {
-    await connection.connect()
-  }
+const info = () => {
+  if (!connection.id) return ''
+  return ` - ${connection.product || connection.vendor || 'Unknown Device'} (${connection.id})`
 }
 </script>
 
 <template>
   <div v-if="!connection.open" id="options" :class="{start:!connection.messages.length}">
-    <h2>DISCONNECTED</h2>
+    <h2 v-if="!connection.id || connection.physicallyConnected">DISCONNECTED{{info()}}</h2>
+    <h2 v-else>UNPLUGGED{{info()}}</h2>
     <fieldset>
       <legend>Options</legend>
       <dl>
@@ -41,51 +41,45 @@ async function connect() {
           <input v-model="connection.options.stopBits" id="stop2" type="radio" value="2"><label for="stop2">2</label>
         </dd>
       </dl>
-      <button @click="connect">Select Serial Port...</button>
+      <button v-if="!connection.id || !connection.physicallyConnected" @click="connection.selectPort">Select Serial Port...</button>
+      <button v-else @click="connection.connect">Connect</button>
     </fieldset>
+  </div>
+  <div v-else id="connect">
+    <h2><strong>CONNECTED</strong>{{info()}}</h2>
   </div>
 </template>
 
 <style>
 
-#options {
+#options, #connect {
+  width: fit-content;
   position: relative;
   margin: -2px auto;
   font-family: 'Fira Code', 'Syne Mono', monospace;
-  width: 180px;
   background-color: rgba(0,0,0,0.7);
   color: #8ba4cb;
-  border-radius: 0 0 0.25rem 0.25rem;
-  height: 34px;
+  border-radius: 0.25rem;
   overflow: hidden;
   transition: height .2s, width .2s;
 }
 #options.start,
 #options:hover {
-  width: 400px;
-  height: 270px;
+  width: fit-content;
+  height: fit-content;
 }
-#options h2 {
+#options h2,
+#connect h2 {
   font-family: 'Syne Mono', monospace;
-  margin: -2px auto;
   background-color: #dc3545;
   color: white;
   text-align: center;
-  border-radius: 0 0 0.25rem 0.25rem;
   font-style: normal;
   font-size: 22px;
-  width: 180px;
   font-weight: 400;
+  padding: 0 10px;
+  line-height: 1.2em;
 }
-/*#options dt,*/
-/*#options dd {*/
-/*  display: inline-block;*/
-/*  width: 100px;*/
-/*}*/
-/*#options dd::after {*/
-/*  content: '';*/
-/*  display: block;*/
-/*}*/
 #options fieldset {
   border: none;
 }
@@ -125,4 +119,11 @@ async function connect() {
   color: #368dd8;
   background-color: #ddd;
 }
+
+#connect h2 {
+  background-color: green;
+  color: #ddd;
+}
+
+
 </style>

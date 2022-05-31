@@ -62,6 +62,10 @@ body {
   -moz-osx-font-smoothing: grayscale;
 }
 
+strong {
+  font-weight: bold;
+}
+
 button {
   border: solid 1px #b3b3b3;
   border-radius: 4px;

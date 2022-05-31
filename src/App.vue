@@ -1,11 +1,9 @@
 <script setup>
-import {hex} from "./util.js";
 import { useConnectionStore } from './stores/connection.js'
 import {onMounted, ref, watch} from "vue"
 import ConnectModal from "./components/ConnectModal.vue"
 import AsciiInput from "./components/AsciiInput.vue"
 import { decode, encodeWithHtml } from "./asciiEncoder.js"
-import { getUsbInfo } from "./usb-ids.js"
 const connection = useConnectionStore()
 window.conn = connection
 const supported = !!navigator.serial
@@ -19,23 +17,6 @@ const history = []
 let historyIndex = 0
 let wip = ''
 let scrolledToBottom = true
-
-if (navigator.serial) {
-  navigator.serial.getPorts().then(async (ports) => {
-    console.log('ports', ports)
-    for (let port of ports) {
-      const {usbVendorId, usbProductId} = port.getInfo()
-      const vid = hex(usbVendorId)
-      const pid = hex(usbProductId)
-      const info = await getUsbInfo(vid, pid)
-      console.log('paired', `${vid}:${pid}`, info.product)
-    }
-    // for await (let port of makeTextFileLineIterator('/public/usb-ids.txt')) {
-    //
-    // }
-    // getUsbInfo('0dd4','0237').then(console.log)
-  });
-}
 
 watch(inputData, async (data) => {
   displayedInput.value = encodeWithHtml(data, false)
@@ -115,15 +96,13 @@ function setInputValue(target, value) {
   target.selectionEnd = target.value.length
   document.execCommand('insertText', false, value)
 }
-// async function connect() {
-//   selectingConnection.value = true
-//   if(await connection.selectPort()) {
-//     //
-//   }
-//   selectingConnection.value = false
-// }
 
-onMounted(() => {
+onMounted(async () => {
+  const qs = new URLSearchParams(window.location.search);
+  if (qs.get('vid') && qs.get('pid')) {
+    await connection.init(qs.get('vid'), qs.get('pid'))
+  }
+
   const consoleDiv = document.querySelector('#console')
   const outputDiv = document.querySelector('#output')
   const resizeObserver = new ResizeObserver(entries => {
@@ -134,6 +113,17 @@ onMounted(() => {
     }
   });
   resizeObserver.observe(outputDiv);
+
+  window.addEventListener('keydown', async (e) => {
+    if (keyCombo(e) === 'META+D') {
+      e.preventDefault();
+      e.stopPropagation();
+      if (!connection.open)
+        await connection.connect()
+      else
+        await connection.close()
+    }
+  })
 })
 function consoleScroll(e) {
   const scrollPoint = e.target.scrollTop + e.target.clientHeight
@@ -143,7 +133,9 @@ function consoleScroll(e) {
 
 <template>
   <header>
-    <h1>WebSerial</h1>
+    <h1>
+      <a href="https://webserial.io">WebSerial</a>
+    </h1>
     <span id="cred"> by <a href="https://github.com/williamkapke" target="_blank">William Kapke</a></span>
     <aside>
       <label for="checkbox">New Lines</label><input id="checkbox" type="checkbox" v-model="newlines">
@@ -192,11 +184,11 @@ function consoleScroll(e) {
       <button>␡</button>
       <span>
         <label for="ascii-input-prepend">PREPEND</label>
-        <AsciiInput id="prepend" max-length="2" :value="prepend" @change="prepend = $event"></AsciiInput>
+        <AsciiInput id="prepend" max-length="5" :value="prepend" @change="prepend = $event"></AsciiInput>
       </span>
       <span>
         <label for="ascii-input-append">APPEND</label>
-        <AsciiInput id="append" max-length="2" :value="append" @change="append = $event"></AsciiInput>
+        <AsciiInput id="append" max-length="5" :value="append" @change="append = $event"></AsciiInput>
       </span>
     </div>
     <AsciiInput id="input"
