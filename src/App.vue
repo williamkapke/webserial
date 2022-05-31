@@ -238,6 +238,10 @@ function consoleScroll(e) {
   line-height: 1em;
   color: #f5f5f5
 }
+#app > header > h1 > a {
+  text-decoration: none;
+  color: inherit;
+}
 #app > header > aside {
   position: fixed;
   top: 0;
