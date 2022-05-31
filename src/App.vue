@@ -333,7 +333,7 @@ main {
   padding: 0;
   width: 1.6ch;
   height: 1.4rem;
-  line-height: 1rem;
+  line-height: 1.6rem;
 }
 #toolbar > button::first-letter {
   margin-left: -2px;
