@@ -44,7 +44,7 @@ export const getUsbInfo = async (vid, pid) => {
         pid = info.pid = hex(i.usbProductId)
     }
     log(`searching for ${vid}:${pid}`)
-    for await (let line of makeTextFileLineIterator('/public/usb-ids.txt')) {
+    for await (let line of makeTextFileLineIterator('/usb-ids.txt')) {
         if (line === '# List of known device classes, subclasses and protocols') {
             break
         }
