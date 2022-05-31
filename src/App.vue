@@ -324,6 +324,7 @@ main {
   margin-top: 3px;
 }
 #toolbar > button {
+  font-family: 'Fira Code VF';
   font-size: 40px;
   cursor: pointer;
   border: 1px solid #9cd1ff;
@@ -332,7 +333,7 @@ main {
   padding: 0;
   width: 1.6ch;
   height: 1.4rem;
-  line-height: 1rem;
+  line-height: 1.6rem;
 }
 #toolbar > button::first-letter {
   margin-left: -2px;
@@ -340,11 +341,12 @@ main {
 
 #input {
   width: 100%;
-  height: 3em;
+  min-height: 3em;
 }
 
 #prepend, #append {
-  width: 3ch;
+  min-width: 2ch;
+  width: fit-content;
   font-size: 22px;
 }
 

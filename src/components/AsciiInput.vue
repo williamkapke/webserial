@@ -81,7 +81,8 @@ x::after {
 
 .ascii-input-wrap {
   font-family: 'Fira Code VF', monospace;
-  height: 1em;
+  height: fit-content;
+  min-height: 1em;
   background-color: #fff;
   width: 15ch;
 }
@@ -96,16 +97,19 @@ x::after {
 }
 .ascii-input-wrap > pre,
 .ascii-input-wrap > textarea {
-  position: absolute;
-  left: var(--input-padding);
-  right: var(--input-padding);
-  top: var(--input-padding);
-  bottom: var(--input-padding);
+  min-height: 1em;
   font-size: 1rem;
   word-break: break-all;
-  /*overflow-wrap: break-word;*/
   white-space: pre-wrap;
   line-height: 1.2em;
+}
+.ascii-input-wrap > textarea {
+  position: absolute;
+  left: 0;
+  right: 0;
+  top: 0;
+  bottom: 0;
+  overflow: hidden;
 }
 .ascii-input-wrap > textarea::placeholder {
   -webkit-text-fill-color: initial;
@@ -116,7 +120,6 @@ x::after {
   resize: none;
 }
 .ascii-input-wrap > pre {
-  /*background-color: #aaa;*/
   outline: none;
 }
 

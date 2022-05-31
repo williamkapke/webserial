@@ -79,12 +79,18 @@ const useConnectionStore = defineStore({
     async connect() {
       if (!this.port) return
       console.log(this.id + ': opening')
-      await this.port.open(this.options)
-      this.open = !!this.port?.readable
-      console.log(this.id + ': opened')
-      // const { clearToSend, dataCarrierDetect, dataSetReady, ringIndicator} = await this.port.getSignals()
-      // console.log({ clearToSend, dataCarrierDetect, dataSetReady, ringIndicator})
-      this.monitor()
+      try {
+        await this.port.open(this.options)
+        this.open = !!this.port?.readable
+        console.log(this.id + ': opened')
+        // const { clearToSend, dataCarrierDetect, dataSetReady, ringIndicator} = await this.port.getSignals()
+        // console.log({ clearToSend, dataCarrierDetect, dataSetReady, ringIndicator})
+        this.monitor()
+      }
+      catch (e) {
+        console.log(e)
+        window.alert(e.message)
+      }
     },
     async monitor() {
       console.log('monitor()')
