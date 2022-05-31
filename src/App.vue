@@ -215,7 +215,7 @@ function consoleScroll(e) {
 
 #app {
   position: relative;
-  /*background-color: #282828;*/
+  padding-top: 32px;
   height: 100vh;
   display: flex;
   flex-direction: column;
