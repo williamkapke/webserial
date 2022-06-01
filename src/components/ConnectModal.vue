@@ -1,6 +1,5 @@
 <script setup>
 import { useConnectionStore } from '../stores/connection.js'
-import { ref, watch } from "vue";
 const connection = useConnectionStore()
 
 const info = () => {
@@ -75,7 +74,7 @@ const info = () => {
   color: white;
   text-align: center;
   font-style: normal;
-  font-size: 22px;
+  font-size: 14px;
   font-weight: 400;
   padding: 0 10px;
   line-height: 1.2em;

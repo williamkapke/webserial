@@ -29,7 +29,9 @@ const useConnectionStore = defineStore({
       stopBits: ref(1)
     },
     signals: {},
-    messages: []
+    messages: [],
+    prepend: '',
+    append: '\n'
   }),
   getters: {
   },
