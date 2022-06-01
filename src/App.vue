@@ -5,6 +5,7 @@ import ConnectModal from "./components/ConnectModal.vue"
 import AsciiInput from "./components/AsciiInput.vue"
 import { decode, encodeWithHtml } from "./asciiEncoder.js"
 import Toolbar from "./components/Toolbar.vue";
+import {keyCombo, shortcuts} from "./shortcuts.js";
 const connection = useConnectionStore()
 window.conn = connection
 const supported = !!navigator.serial
@@ -23,14 +24,6 @@ watch(inputData, async (data) => {
   displayedInput.value = encodeWithHtml(data, false)
 })
 
-// this works enough for now
-const keyCombo = (e) => [
-  (e.metaKey || e.key === 'Meta') && 'META',
-  (e.ctrlKey || e.key === 'Ctrl') && 'CTRL',
-  (e.altKey || e.key === 'Alt') && 'ALT',
-  (e.shiftKey || e.key === 'Shift') && 'SHIFT',
-  (e.key!=='Meta' && e.key!=='Shift' && e.key!=='Ctrl' && e.key!=='Alt') && e.key.toUpperCase()
-].filter(Boolean).join('+')
 
 function inputKeyup(e) {
   if (e.key === 'ArrowUp' || e.key === 'ArrowDown') {
@@ -41,14 +34,14 @@ function inputKeyup(e) {
 function inputKeydown(e) {
   // console.log(keyCombo(e), e)
   switch (keyCombo(e)) {
-    case 'META+K':
+    case shortcuts.CLEAR:
       e.preventDefault()
       connection.messages.length = 0
       return true // say that it has been handled
-    case 'META+ENTER':
+    case shortcuts.IGNORE_LF:
       document.execCommand('insertText', false, '␊')
       return true
-    case 'ENTER':
+    case shortcuts.SEND:
       // SUBMIT
       e.preventDefault()
       if (history[history.length-1] !== e.target.value) {
@@ -62,14 +55,14 @@ function inputKeydown(e) {
       // clear the input
       setInputValue(e.target, '')
       return true // say that it has been handled
-    case 'ARROWUP':
+    case shortcuts.UP:
       if (historyIndex !== 0) {
         historyIndex--
         setInputValue(e.target, history[historyIndex])
         return true
       }
       break
-    case 'ARROWDOWN':
+    case shortcuts.DOWN:
       historyIndex++
       if (historyIndex >= history.length) {
         setInputValue(e.target, wip)
@@ -107,7 +100,7 @@ onMounted(async () => {
   resizeObserver.observe(outputDiv);
 
   window.addEventListener('keydown', async (e) => {
-    if (keyCombo(e) === 'META+D') {
+    if (keyCombo(e) === shortcuts.TOGGLE_CONNECTION) {
       e.preventDefault();
       e.stopPropagation();
       if (!connection.open)

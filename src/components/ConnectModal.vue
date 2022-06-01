@@ -9,9 +9,14 @@ const info = () => {
 </script>
 
 <template>
-  <div v-if="!connection.open" id="options" :class="{start:!connection.messages.length}">
-    <h2 v-if="!connection.id || connection.physicallyConnected">DISCONNECTED{{info()}}</h2>
-    <h2 v-else>UNPLUGGED{{info()}}</h2>
+  <div id="options" :class="{start:!connection.messages.length, open:connection.open}">
+    <h2>
+      <strong v-if="connection.open">CONNECTED</strong>
+      <strong v-else-if="!connection.id || connection.physicallyConnected">CONNECTED</strong>
+      <strong v-else>UNPLUGGED</strong>
+      {{info()}}
+    </h2>
+
     <fieldset>
       <legend>Options</legend>
       <dl>
@@ -44,38 +49,27 @@ const info = () => {
       <button v-else @click="connection.connect">Connect</button>
     </fieldset>
   </div>
-  <div v-else id="connect">
-    <h2><strong>CONNECTED</strong>{{info()}}</h2>
-  </div>
 </template>
 
 <style>
 
-#options, #connect {
-  width: fit-content;
+#options {
   position: relative;
-  margin: -2px auto;
+  height: fit-content;
+  width: fit-content;
+  margin: -4px auto;
   font-family: 'Fira Code', 'Syne Mono', monospace;
   background-color: rgba(0,0,0,0.7);
   color: #8ba4cb;
-  border-radius: 0.25rem;
+  border-radius: 3px;
   overflow: hidden;
-  transition: height .2s, width .2s;
 }
-#options.start,
-#options:hover {
-  width: fit-content;
-  height: fit-content;
-}
-#options h2,
-#connect h2 {
+#options h2 {
   font-family: 'Syne Mono', monospace;
   background-color: #dc3545;
   color: white;
   text-align: center;
-  font-style: normal;
   font-size: 14px;
-  font-weight: 400;
   padding: 0 10px;
   line-height: 1.2em;
 }
@@ -119,7 +113,10 @@ const info = () => {
   background-color: #ddd;
 }
 
-#connect h2 {
+#options.open > fieldset {
+  display: none;
+}
+#options.open > h2 {
   background-color: green;
   color: #ddd;
 }
